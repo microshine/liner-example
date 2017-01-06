@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>WebCrypto Liner with dynamic crypto libraries</title>
+    <script src="src/helper.js"></script>
+    <script src="https://www.promisejs.org/polyfills/promise-7.0.4.min.js"></script>
+    <script src="node_modules/webcrypto-liner/index.js"></script>
+</head>
+
+<body>
+    <h3>WebCrypto Liner example</h3>
+    <div>
+        <textarea id="text" cols="10" rows="10" style="width: 100%">Some text</textarea>
+        <br/>
+        <input type="button" value="Sign" onclick="App.start()"/>
+        <div id="result"></div>
+    </div>
+    <script>
+        switch (helper.BrowserInfo().name) {
+            case helper.Browser.IE:
+            case helper.Browser.Edge:
+            case helper.Browser.Safari:
+                helper.ImportScript("node_modules/asmcrypto.js/asmcrypto.js");      // asmcrypto
+                helper.ImportScript("dist/elliptic.js");                            // elliptic
+        }
+    </script>
+</body>
+
+</html>

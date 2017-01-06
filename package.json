@@ -1,0 +1,20 @@
+{
+  "name": "liner-worker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "npm run build",
+    "build": "npm run build:helper && npm run build:liner",
+    "build:helper": "tsc",
+    "build:liner": "cd node_modules/webcrypto-liner && npm i && npm i webpack && webpack && cd ../.."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "webcrypto-liner": "git+https://github.com/PeculiarVentures/webcrypto-liner#node",
+    "typescript": "^2"
+  }
+}
