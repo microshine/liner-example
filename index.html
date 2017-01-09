@@ -4,28 +4,38 @@
 <head>
     <meta charset="UTF-8">
     <title>WebCrypto Liner with dynamic crypto libraries</title>
-    <script src="src/helper.js"></script>
-    <script src="https://www.promisejs.org/polyfills/promise-7.0.4.min.js"></script>
-    <script src="node_modules/webcrypto-liner/index.js"></script>
 </head>
 
 <body>
+    <script>
+        var worker = new Worker("worker/crypto.js");
+        function sign() {
+            var $result = document.getElementById("result")
+            $result.style.color = "blue";
+            $result.textContent = "Loading...";
+
+            var $text = document.getElementById("text")
+            worker.postMessage(["sign", $text.value]);
+        }
+
+        worker.onmessage = function(e) {
+            var $result = document.getElementById("result")
+            $result.style.color = "green";
+            $result.textContent = e.data[1];
+        }
+        worker.onerror = function(e) {
+            var $result = document.getElementById("result")
+            $result.style.color = "red";
+            $result.textContent = e.message;
+        }
+    </script>
     <h3>WebCrypto Liner example</h3>
     <div>
         <textarea id="text" cols="10" rows="10" style="width: 100%">Some text</textarea>
         <br/>
-        <input type="button" value="Sign" onclick="App.start()"/>
+        <input type="button" value="Sign" onclick="sign()"/>
         <div id="result"></div>
     </div>
-    <script>
-        switch (helper.BrowserInfo().name) {
-            case helper.Browser.IE:
-            case helper.Browser.Edge:
-            case helper.Browser.Safari:
-                helper.ImportScript("node_modules/asmcrypto.js/asmcrypto.js");      // asmcrypto
-                helper.ImportScript("dist/elliptic.js");                            // elliptic
-        }
-    </script>
 </body>
 
 </html>

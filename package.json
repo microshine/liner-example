@@ -14,7 +14,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "webcrypto-liner": "git+https://github.com/PeculiarVentures/webcrypto-liner#node",
-    "typescript": "^2"
+    "express": "^4.14.0",
+    "typescript": "^2",
+    "webcrypto-liner": "git+https://github.com/PeculiarVentures/webcrypto-liner#node"
   }
 }

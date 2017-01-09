@@ -4,10 +4,15 @@
         "lib": [
             "es5",
             "es2015.promise",
-            "dom"
+            "webworker"
         ],
         "noImplicitAny": true,
         "sourceMap": false,
-        "outFile": "src/helper.js"
-    }
+        "outFile": "worker/crypto.js"
+    },
+    "files": [
+        "lib/browser.ts",
+        "lib/app.ts",
+        "lib/worker.ts"
+    ]
 }

@@ -16,7 +16,7 @@ namespace helper {
             name: "",
             version: ""
         };
-        const userAgent = window.navigator.userAgent;
+        const userAgent = self.navigator.userAgent;
 
         let reg: string[] | null;
         if (reg = /edge\/([\d\.]+)/i.exec(userAgent)) {
