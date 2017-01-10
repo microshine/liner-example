@@ -1,4 +1,3 @@
-let seed: string;
 onmessage = e => {
 
     let command = e.data[0];
@@ -9,9 +8,7 @@ onmessage = e => {
 
     switch (command) {
         case "seed":
-            seed = params[0];
-            console.log("seedrandom", seed);
-            (Math as any).seedrandom(seed);
+            (Math as any).seedrandom(params[0]);
             break;
         case "sign":
             Promise.resolve()
@@ -45,6 +42,7 @@ function getRandomValues(buffer: ArrayBufferView): ArrayBufferView {
 
 let _self = self as any;
 if (!(_self.crypto || _self.msCrypto)) {
+    console.log("WebCrypto: !WARNING! Webcrypto unable to get crypto || msCrypto getRandomValues, rallying o supplied seed.)");
     postMessage(["seed"]);
     _self.crypto = { getRandomValues: getRandomValues };
     Object.freeze(_self.crypto);

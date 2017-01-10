@@ -78,7 +78,6 @@ var App = (function () {
     };
     return App;
 }());
-var seed;
 onmessage = function (e) {
     var command = e.data[0];
     var params = e.data.slice(1);
@@ -86,9 +85,7 @@ onmessage = function (e) {
         throw TypeError("Worker's command cannot be empty");
     switch (command) {
         case "seed":
-            seed = params[0];
-            console.log("seedrandom", seed);
-            Math.seedrandom(seed);
+            Math.seedrandom(params[0]);
             break;
         case "sign":
             Promise.resolve()
@@ -118,6 +115,7 @@ function getRandomValues(buffer) {
 }
 var _self = self;
 if (!(_self.crypto || _self.msCrypto)) {
+    console.log("WebCrypto: !WARNING! Webcrypto unable to get crypto || msCrypto getRandomValues, rallying o supplied seed.)");
     postMessage(["seed"]);
     _self.crypto = { getRandomValues: getRandomValues };
     Object.freeze(_self.crypto);
