@@ -1,3 +1,4 @@
+let seed: string;
 onmessage = e => {
 
     let command = e.data[0];
@@ -7,6 +8,11 @@ onmessage = e => {
         throw TypeError("Worker's command cannot be empty");
 
     switch (command) {
+        case "seed":
+            seed = params[0];
+            console.log("seedrandom", seed);
+            (Math as any).seedrandom(seed);
+            break;
         case "sign":
             Promise.resolve()
                 .then(() => App.generateKey())
@@ -39,10 +45,12 @@ function getRandomValues(buffer: ArrayBufferView): ArrayBufferView {
 
 let _self = self as any;
 if (!(_self.crypto || _self.msCrypto)) {
+    postMessage(["seed"]);
     _self.crypto = { getRandomValues: getRandomValues };
     Object.freeze(_self.crypto);
 }
 
+importScripts("seedrandom.js");
 importScripts("webcrypto-liner.js");
 
 switch (helper.BrowserInfo().name) {

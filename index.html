@@ -18,24 +18,35 @@
             worker.postMessage(["sign", $text.value]);
         }
 
-        worker.onmessage = function(e) {
-            var $result = document.getElementById("result")
-            $result.style.color = "green";
-            $result.textContent = e.data[1];
+        worker.onmessage = function (e) {
+            switch (e.data[0]) {
+                case "seed":
+                    var seed = "";
+                    var crypto = self.crypto || self.msCrypto;
+                    var buf = crypto.getRandomValues(new Uint8Array(20));
+                    for (var i = 0; i < buf.length; i++)
+                        seed += String.fromCharCode(buf[i]);
+                    worker.postMessage(["seed", seed]);
+                    break;
+                default:
+                    var $result = document.getElementById("result")
+                    $result.style.color = "green";
+                    $result.textContent = e.data[1];
+            }
         }
-        worker.onerror = function(e) {
+        worker.onerror = function (e) {
             var $result = document.getElementById("result")
             $result.style.color = "red";
             $result.textContent = e.message;
         }
     </script>
-    <h3>WebCrypto Liner example</h3>
-    <div>
-        <textarea id="text" cols="10" rows="10" style="width: 100%">Some text</textarea>
-        <br/>
-        <input type="button" value="Sign" onclick="sign()"/>
-        <div id="result"></div>
-    </div>
+<h3>WebCrypto Liner example</h3>
+<div>
+    <textarea id="text" cols="10" rows="10" style="width: 100%">Some text</textarea>
+<br/>
+<input type="button" value="Sign" onclick="sign()"/>
+<div id="result"></div>
+</div>
 </body>
 
 </html>

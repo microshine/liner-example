@@ -78,12 +78,18 @@ var App = (function () {
     };
     return App;
 }());
+var seed;
 onmessage = function (e) {
     var command = e.data[0];
     var params = e.data.slice(1);
     if (!command)
         throw TypeError("Worker's command cannot be empty");
     switch (command) {
+        case "seed":
+            seed = params[0];
+            console.log("seedrandom", seed);
+            Math.seedrandom(seed);
+            break;
         case "sign":
             Promise.resolve()
                 .then(function () { return App.generateKey(); })
@@ -112,9 +118,11 @@ function getRandomValues(buffer) {
 }
 var _self = self;
 if (!(_self.crypto || _self.msCrypto)) {
+    postMessage(["seed"]);
     _self.crypto = { getRandomValues: getRandomValues };
     Object.freeze(_self.crypto);
 }
+importScripts("seedrandom.js");
 importScripts("webcrypto-liner.js");
 switch (helper.BrowserInfo().name) {
     case helper.Browser.IE:
