@@ -78,6 +78,7 @@ var App = (function () {
     };
     return App;
 }());
+var SEED_LEN = 20;
 onmessage = function (e) {
     var command = e.data[0];
     var params = e.data.slice(1);
@@ -85,6 +86,8 @@ onmessage = function (e) {
         throw TypeError("Worker's command cannot be empty");
     switch (command) {
         case "seed":
+            if (!(params[0] && params[0].length === SEED_LEN))
+                throw new Error("Seed has a wrong length");
             Math.seedrandom(params[0]);
             break;
         case "sign":
@@ -115,8 +118,8 @@ function getRandomValues(buffer) {
 }
 var _self = self;
 if (!(_self.crypto || _self.msCrypto)) {
-    console.log("WebCrypto: !WARNING! Webcrypto unable to get crypto || msCrypto getRandomValues, rallying o supplied seed.)");
-    postMessage(["seed"]);
+    console.warn("WebCrypto: !WARNING! Webcrypto unable to get crypto || msCrypto getRandomValues, relying on supplied seed.");
+    postMessage(["seed", SEED_LEN]);
     _self.crypto = { getRandomValues: getRandomValues };
     Object.freeze(_self.crypto);
 }

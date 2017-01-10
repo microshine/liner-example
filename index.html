@@ -8,7 +8,7 @@
 
 <body>
     <script>
-        var worker = new Worker("worker/crypto.js");
+        var worker = new Worker("worker/worker.js");
         function sign() {
             var $result = document.getElementById("result")
             $result.style.color = "blue";
@@ -23,7 +23,7 @@
                 case "seed":
                     var seed = "";
                     var crypto = self.crypto || self.msCrypto;
-                    var buf = crypto.getRandomValues(new Uint8Array(20));
+                    var buf = crypto.getRandomValues(new Uint8Array(e.data[1]));
                     for (var i = 0; i < buf.length; i++)
                         seed += String.fromCharCode(buf[i]);
                     worker.postMessage(["seed", seed]);
