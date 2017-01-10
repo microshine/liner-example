@@ -7456,19 +7456,19 @@ Rand.prototype.generate = function generate(len) {
   return this._rand(len);
 };
 
-if (typeof window === 'object') {
-  if (window.crypto && window.crypto.getRandomValues) {
+if (typeof self === 'object') {
+  if (self.crypto && self.crypto.getRandomValues) {
     // Modern browsers
     Rand.prototype._rand = function _rand(n) {
       var arr = new Uint8Array(n);
-      window.crypto.getRandomValues(arr);
+      self.crypto.getRandomValues(arr);
       return arr;
     };
-  } else if (window.msCrypto && window.msCrypto.getRandomValues) {
+  } else if (self.msCrypto && self.msCrypto.getRandomValues) {
     // IE
     Rand.prototype._rand = function _rand(n) {
       var arr = new Uint8Array(n);
-      window.msCrypto.getRandomValues(arr);
+      self.msCrypto.getRandomValues(arr);
       return arr;
     };
   } else {

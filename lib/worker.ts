@@ -1,13 +1,3 @@
-
-switch (helper.BrowserInfo().name) {
-    case helper.Browser.IE:
-        importScripts("promise.min.js");
-    case helper.Browser.Edge:
-    case helper.Browser.Safari:
-        importScripts("asmcrypto.js");
-        importScripts("elliptic.js");
-}
-
 onmessage = e => {
 
     let command = e.data[0];
@@ -22,7 +12,7 @@ onmessage = e => {
                 .then(() => App.generateKey())
                 .then(() => App.sign.apply(App, params))
                 .then(sig => postMessage(["sign", App.buffer2string(new Uint8Array(sig))]))
-                .catch(e => { 
+                .catch(e => {
                     console.log(e);
                     console.log(e.stack);
                     throw e;
@@ -32,6 +22,37 @@ onmessage = e => {
             throw Error(`Unknown worker's command '${command}'`);
     }
 
+}
+
+function getRandomArbitrary(min: number, max: number) {
+    return Math.random() * (max - min) + min;
+}
+
+function getRandomValues(buffer: ArrayBufferView): ArrayBufferView {
+    let buf = new Uint8Array(buffer as Uint8Array);
+    let i = 0;
+    while (i < buf.length) {
+        buf[i++] = getRandomArbitrary(0, 255);
+    }
+    return buf;
+}
+
+Object.freeze(Math);
+Object.freeze(Math.random);
+
+if (!(self.crypto || self.msCrypto)) {
+    self.crypto = { getRandomValues: getRandomValues };
+    Object.freeze(self.crypto);
+}
+
+
+switch (helper.BrowserInfo().name) {
+    case helper.Browser.IE:
+        importScripts("promise.min.js");
+    case helper.Browser.Edge:
+    case helper.Browser.Safari:
+        importScripts("asmcrypto.js");
+        importScripts("elliptic.js");
 }
 
 importScripts("webcrypto-liner.js");

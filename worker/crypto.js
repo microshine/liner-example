@@ -76,14 +76,6 @@ var App = (function () {
     };
     return App;
 }());
-switch (helper.BrowserInfo().name) {
-    case helper.Browser.IE:
-        importScripts("promise.min.js");
-    case helper.Browser.Edge:
-    case helper.Browser.Safari:
-        importScripts("asmcrypto.js");
-        importScripts("elliptic.js");
-}
 onmessage = function (e) {
     var command = e.data[0];
     var params = e.data.slice(1);
@@ -105,6 +97,31 @@ onmessage = function (e) {
             throw Error("Unknown worker's command '" + command + "'");
     }
 };
+function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+}
+function getRandomValues(buffer) {
+    var buf = new Uint8Array(buffer);
+    var i = 0;
+    while (i < buf.length) {
+        buf[i++] = getRandomArbitrary(0, 255);
+    }
+    return buf;
+}
+Object.freeze(Math);
+Object.freeze(Math.random);
+if (!(self.crypto || self.msCrypto)) {
+    self.crypto = { getRandomValues: getRandomValues };
+    Object.freeze(self.crypto);
+}
+switch (helper.BrowserInfo().name) {
+    case helper.Browser.IE:
+        importScripts("promise.min.js");
+    case helper.Browser.Edge:
+    case helper.Browser.Safari:
+        importScripts("asmcrypto.js");
+        importScripts("elliptic.js");
+}
 importScripts("webcrypto-liner.js");
 var liner = {};
 liner.crypto = new Liner.Crypto();

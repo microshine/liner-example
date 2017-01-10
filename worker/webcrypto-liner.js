@@ -3259,7 +3259,8 @@ var Liner =
 	    };
 	    EcCrypto.generateKey = function (alg, extractable, keyUsage) {
 	        var _this = this;
-	        return new Promise(function (resolve) {
+	        return Promise.resolve()
+	            .then(function () {
 	            _this.checkModule();
 	            var _alg = alg;
 	            var key = new elliptic.ec(_alg.namedCurve.replace("-", "").toLowerCase()); // converts name to 'p192', ...
@@ -3279,68 +3280,74 @@ var Liner =
 	            else if (alg.name === webcrypto_core_1.AlgorithmNames.EcDH) {
 	                prvKey.usages = pubKey.usages = ["deriveKey", "deriveBits"];
 	            }
-	            resolve({
+	            return {
 	                privateKey: prvKey,
 	                publicKey: pubKey
-	            });
+	            };
 	        });
 	    };
 	    EcCrypto.sign = function (algorithm, key, data) {
-	        return new Promise(function (resolve, reject) {
+	        return Promise.resolve()
+	            .then(function () {
 	            var _alg = algorithm;
 	            // get digest
-	            self.crypto.subtle.digest(_alg.hash, data)
-	                .then(function (hash) {
-	                var array = b2a(hash);
-	                var signature = key.key.sign(array);
-	                var hexSignature = buffer2hex(signature.r.toArray(), true) + buffer2hex(signature.s.toArray(), true);
-	                resolve(hex2buffer(hexSignature).buffer);
-	            })
-	                .catch(reject);
+	            var crypto = new crypto_2.Crypto();
+	            return crypto.subtle.digest(_alg.hash, data);
+	        })
+	            .then(function (hash) {
+	            var array = b2a(hash);
+	            var signature = key.key.sign(array);
+	            var hexSignature = buffer2hex(signature.r.toArray(), true) + buffer2hex(signature.s.toArray(), true);
+	            return hex2buffer(hexSignature).buffer;
 	        });
 	    };
 	    EcCrypto.verify = function (algorithm, key, signature, data) {
-	        return new Promise(function (resolve, reject) {
+	        var sig;
+	        return Promise.resolve()
+	            .then(function () {
 	            var _alg = algorithm;
-	            var sig = {
+	            sig = {
 	                r: signature.slice(0, signature.byteLength / 2),
 	                s: signature.slice(signature.byteLength / 2)
 	            };
 	            // get digest
-	            self.crypto.subtle.digest(_alg.hash, data)
-	                .then(function (hash) {
-	                var array = b2a(hash);
-	                resolve(key.key.verify(array, sig));
-	            })
-	                .catch(reject);
+	            var crypto = new crypto_2.Crypto();
+	            return crypto.subtle.digest(_alg.hash, data);
+	        })
+	            .then(function (hash) {
+	            var array = b2a(hash);
+	            return (key.key.verify(array, sig));
 	        });
 	    };
 	    EcCrypto.deriveKey = function (algorithm, baseKey, derivedKeyType, extractable, keyUsages) {
 	        var _this = this;
-	        return new Promise(function (resolve, reject) {
-	            _this.deriveBits(algorithm, baseKey, derivedKeyType.length)
-	                .then(function (bits) {
-	                return self.crypto.subtle.importKey("raw", new Uint8Array(bits), derivedKeyType, extractable, keyUsages);
-	            })
-	                .then(resolve, reject);
+	        return Promise.resolve()
+	            .then(function () {
+	            return _this.deriveBits(algorithm, baseKey, derivedKeyType.length);
+	        })
+	            .then(function (bits) {
+	            var crypto = new crypto_2.Crypto();
+	            return crypto.subtle.importKey("raw", new Uint8Array(bits), derivedKeyType, extractable, keyUsages);
 	        });
 	    };
 	    EcCrypto.deriveBits = function (algorithm, baseKey, length) {
-	        return new Promise(function (resolve, reject) {
+	        return Promise.resolve()
+	            .then(function () {
 	            var promise = Promise.resolve(null);
 	            var shared = baseKey.key.derive(algorithm.public.key.getPublic());
 	            var array = new Uint8Array(shared.toArray());
 	            // Padding
 	            var len = array.length;
-	            len = len > 32 ? len > 48 ? 66 : 48 : 32;
+	            len = (len > 32 ? (len > 48 ? 66 : 48) : 32);
 	            if (array.length < len)
 	                array = helper_1.concat(new Uint8Array(len - array.length), array);
 	            var buf = array.slice(0, length / 8).buffer;
-	            resolve(buf);
+	            return buf;
 	        });
 	    };
 	    EcCrypto.exportKey = function (format, key) {
-	        return new Promise(function (resolve, reject) {
+	        return Promise.resolve()
+	            .then(function () {
 	            var ecKey = key.key;
 	            if (format.toLowerCase() === "jwk") {
 	                var hexPub = ecKey.getPublic("hex").slice(2); // ignore first '04'
@@ -3356,7 +3363,7 @@ var Liner =
 	                        key_ops: [],
 	                        kty: "EC"
 	                    };
-	                    resolve(jwk);
+	                    return jwk;
 	                }
 	                else {
 	                    // private
@@ -3369,7 +3376,7 @@ var Liner =
 	                        key_ops: key.usages,
 	                        kty: "EC"
 	                    };
-	                    resolve(jwk);
+	                    return jwk;
 	                }
 	            }
 	            else {
@@ -3378,7 +3385,8 @@ var Liner =
 	        });
 	    };
 	    EcCrypto.importKey = function (format, keyData, algorithm, extractable, keyUsages) {
-	        return new Promise(function (resolve, reject) {
+	        return Promise.resolve()
+	            .then(function () {
 	            var key = new key_1.CryptoKey();
 	            key.algorithm = algorithm;
 	            if (format.toLowerCase() === "jwk") {
@@ -3400,12 +3408,13 @@ var Liner =
 	                throw new crypto_1.LinerError("Format '" + format + "' is not implemented");
 	            key.extractable = extractable;
 	            key.usages = keyUsages;
-	            resolve(key);
+	            return key;
 	        });
 	    };
 	    return EcCrypto;
 	}(webcrypto_core_1.BaseCrypto));
 	exports.EcCrypto = EcCrypto;
+	var crypto_2 = __webpack_require__(6);
 
 
 /***/ }
