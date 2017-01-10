@@ -45,12 +45,14 @@ var helper;
     }
     helper.BrowserInfo = BrowserInfo;
 })(helper || (helper = {}));
+var alg = { name: "RSA-PSS", hash: "SHA-256", publicExponent: new Uint8Array([1, 0, 1]), modulusLength: 1024 };
+// const alg = { name: "ECDSA", namedCurve: "P-256" };
 var App = (function () {
     function App() {
     }
     App.generateKey = function () {
         var _this = this;
-        return liner.crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, true, ["sign", "verify"])
+        return liner.crypto.subtle.generateKey(alg, true, ["sign", "verify"])
             .then(function (keys) {
             _this.keys = keys;
             return keys;
@@ -59,7 +61,7 @@ var App = (function () {
     App.sign = function (text) {
         if (!this.keys)
             throw new Error("You must generate CryptoKey first");
-        return liner.crypto.subtle.sign({ name: "ECDSA", hash: "SHA-256" }, this.keys.privateKey, this.stringToBuffer(text));
+        return liner.crypto.subtle.sign(alg, this.keys.privateKey, this.stringToBuffer(text));
     };
     App.stringToBuffer = function (text) {
         text = atob(btoa(text)); // utf8 -> binary
@@ -110,9 +112,10 @@ function getRandomValues(buffer) {
 }
 Object.freeze(Math);
 Object.freeze(Math.random);
-if (!(self.crypto || self.msCrypto)) {
-    self.crypto = { getRandomValues: getRandomValues };
-    Object.freeze(self.crypto);
+var _self = self;
+if (!(_self.crypto || _self.msCrypto)) {
+    _self.crypto = { getRandomValues: getRandomValues };
+    Object.freeze(_self.crypto);
 }
 switch (helper.BrowserInfo().name) {
     case helper.Browser.IE:
@@ -123,5 +126,6 @@ switch (helper.BrowserInfo().name) {
         importScripts("elliptic.js");
 }
 importScripts("webcrypto-liner.js");
-var liner = {};
-liner.crypto = new Liner.Crypto();
+var liner = {
+    crypto: new Liner.Crypto()
+};

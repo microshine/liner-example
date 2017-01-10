@@ -1,3 +1,8 @@
+declare type CryptoKeyPair = { privateKey: CryptoKey, publicKey: CryptoKey, }
+
+const alg = { name: "RSA-PSS", hash: "SHA-256", publicExponent: new Uint8Array([1, 0, 1]), modulusLength: 1024 };
+// const alg = { name: "ECDSA", namedCurve: "P-256" };
+
 class App {
 
     static keys?: CryptoKeyPair;
@@ -5,11 +10,11 @@ class App {
     static generateKey() {
 
         return liner.crypto.subtle.generateKey(
-            { name: "ECDSA", namedCurve: "P-256" },
+            alg,
             true,
             ["sign", "verify"]
         )
-            .then(keys => {
+            .then((keys: CryptoKeyPair) => {
                 this.keys = keys;
                 return keys;
             })
@@ -18,7 +23,7 @@ class App {
     static sign(text: string) {
         if (!this.keys)
             throw new Error("You must generate CryptoKey first");
-        return liner.crypto.subtle.sign({ name: "ECDSA", hash: "SHA-256" }, this.keys.privateKey, this.stringToBuffer(text))
+        return liner.crypto.subtle.sign(alg, this.keys.privateKey, this.stringToBuffer(text))
     }
 
     static stringToBuffer(text: string) {

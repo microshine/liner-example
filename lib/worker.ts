@@ -40,9 +40,10 @@ function getRandomValues(buffer: ArrayBufferView): ArrayBufferView {
 Object.freeze(Math);
 Object.freeze(Math.random);
 
-if (!(self.crypto || self.msCrypto)) {
-    self.crypto = { getRandomValues: getRandomValues };
-    Object.freeze(self.crypto);
+let _self = self as any;
+if (!(_self.crypto || _self.msCrypto)) {
+    _self.crypto = { getRandomValues: getRandomValues };
+    Object.freeze(_self.crypto);
 }
 
 
@@ -56,5 +57,8 @@ switch (helper.BrowserInfo().name) {
 }
 
 importScripts("webcrypto-liner.js");
-let liner = {};
-liner.crypto = new Liner.Crypto();
+declare let Liner: any;
+
+let liner = {
+    crypto: new Liner.Crypto()
+};
