@@ -1,7 +1,8 @@
 declare type CryptoKeyPair = { privateKey: CryptoKey, publicKey: CryptoKey, }
+declare let liner: any;
 
-const alg = { name: "RSA-PSS", hash: "SHA-256", publicExponent: new Uint8Array([1, 0, 1]), modulusLength: 1024 };
-// const alg = { name: "ECDSA", namedCurve: "P-256" };
+// const alg = { name: "RSA-PSS", hash: "SHA-256", publicExponent: new Uint8Array([1, 0, 1]), modulusLength: 1024, saltLength: 32 };
+const alg = { name: "ECDSA", namedCurve: "P-256", hash: "SHA-256" };
 
 class App {
 

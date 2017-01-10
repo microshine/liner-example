@@ -37,15 +37,13 @@ function getRandomValues(buffer: ArrayBufferView): ArrayBufferView {
     return buf;
 }
 
-Object.freeze(Math);
-Object.freeze(Math.random);
-
 let _self = self as any;
 if (!(_self.crypto || _self.msCrypto)) {
     _self.crypto = { getRandomValues: getRandomValues };
     Object.freeze(_self.crypto);
 }
 
+importScripts("webcrypto-liner.js");
 
 switch (helper.BrowserInfo().name) {
     case helper.Browser.IE:
@@ -55,10 +53,3 @@ switch (helper.BrowserInfo().name) {
         importScripts("asmcrypto.js");
         importScripts("elliptic.js");
 }
-
-importScripts("webcrypto-liner.js");
-declare let Liner: any;
-
-let liner = {
-    crypto: new Liner.Crypto()
-};

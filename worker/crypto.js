@@ -45,8 +45,8 @@ var helper;
     }
     helper.BrowserInfo = BrowserInfo;
 })(helper || (helper = {}));
-var alg = { name: "RSA-PSS", hash: "SHA-256", publicExponent: new Uint8Array([1, 0, 1]), modulusLength: 1024 };
-// const alg = { name: "ECDSA", namedCurve: "P-256" };
+// const alg = { name: "RSA-PSS", hash: "SHA-256", publicExponent: new Uint8Array([1, 0, 1]), modulusLength: 1024, saltLength: 32 };
+var alg = { name: "ECDSA", namedCurve: "P-256", hash: "SHA-256" };
 var App = (function () {
     function App() {
     }
@@ -110,13 +110,12 @@ function getRandomValues(buffer) {
     }
     return buf;
 }
-Object.freeze(Math);
-Object.freeze(Math.random);
 var _self = self;
 if (!(_self.crypto || _self.msCrypto)) {
     _self.crypto = { getRandomValues: getRandomValues };
     Object.freeze(_self.crypto);
 }
+importScripts("webcrypto-liner.js");
 switch (helper.BrowserInfo().name) {
     case helper.Browser.IE:
         importScripts("promise.min.js");
@@ -125,7 +124,3 @@ switch (helper.BrowserInfo().name) {
         importScripts("asmcrypto.js");
         importScripts("elliptic.js");
 }
-importScripts("webcrypto-liner.js");
-var liner = {
-    crypto: new Liner.Crypto()
-};
